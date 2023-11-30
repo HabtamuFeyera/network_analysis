@@ -7,11 +7,8 @@ import copy
 from datetime import datetime
 from pick import pick
 from time import sleep
+# loader.py
 
-
-
-
-# Create wrapper classes for using slack_sdk in place of slacker
 class SlackDataLoader:
     '''
     Slack exported data IO class.
@@ -35,8 +32,8 @@ class SlackDataLoader:
         '''
         self.path = path
         self.channels = self.get_channels()
-        self.users = self.get_ussers()
-    
+        self.users = self.get_users()
+        self.user_names_by_id, self.user_ids_by_name = self.get_user_map()
 
     def get_users(self):
         '''
@@ -59,27 +56,29 @@ class SlackDataLoader:
     def get_channel_messages(self, channel_name):
         '''
         write a function to get all the messages from a channel
-        
         '''
+        channel_path = os.path.join(self.path, channel_name)
+        messages = []
 
-    # 
+        # Iterate over files in the channel directory
+        for file_name in os.listdir(channel_path):
+            if file_name.endswith(".json"):
+                file_path = os.path.join(channel_path, file_name)
+                
+                # Load messages from the JSON file
+                with open(file_path, 'r') as f:
+                    channel_messages = json.load(f)
+                    messages.extend(channel_messages)
+
+        return messages
+    
     def get_user_map(self):
         '''
         write a function to get a map between user id and user name
         '''
-        userNamesById = {}
-        userIdsByName = {}
+        user_names_by_id = {}
+        user_ids_by_name = {}
         for user in self.users:
-            userNamesById[user['id']] = user['name']
-            userIdsByName[user['name']] = user['id']
-        return userNamesById, userIdsByName        
-
-
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Export Slack history')
-
-    
-    parser.add_argument('--zip', help="Name of a zip file to import")
-    args = parser.parse_args()
+            user_names_by_id[user['id']] = user['name']
+            user_ids_by_name[user['name']] = user['id']
+        return user_names_by_id, user_ids_by_name
