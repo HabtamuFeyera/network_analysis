@@ -1,4 +1,3 @@
-
 from __future__ import print_function
 import argparse
 
@@ -11,4 +10,3 @@ parser.add_argument('--userfile', type=str, default='users.json', help='users pr
 
 cfg = parser.parse_args()
 # print(cfg)
-
