@@ -96,10 +96,10 @@ class SlackDataLoader:
                     continue
 
                 if 'bot_id' not in row.keys():
-                    msg_type.append(row.get('type'))
-                    msg_content.append(row.get('text'))
+                    msg_type.append(row.get(['type']))
+                    msg_content.append(row.get(['text']))
                     sender_id.append(row.get('user_profile', {}).get('real_name', 'Not provided'))
-                    time_msg.append(row.get('ts'))
+                    time_msg.append(row.get(['ts']))
                     msg_dist.append(row['blocks'][0]['elements'][0]['elements'][0]['type']
                                      if 'blocks' in row and row['blocks'] and len(row['blocks'][0]['elements'][0]['elements']) != 0
                                      else 'reshared')
