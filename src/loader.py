@@ -72,7 +72,16 @@ class SlackDataLoader:
 
         for json_file in glob.glob(f"{path_channel}/*.json"):
             with open(json_file, 'r', encoding="utf8") as slack_data:
-                slack_data = json.load(slack_data)
+                try:
+                    slack_data = json.load(slack_data)
+                except json.JSONDecodeError:
+                    print(f"Error decoding JSON in file: {json_file}")
+                    continue
+                
+                if not isinstance(slack_data, list):
+                    print(f"Invalid JSON format in file: {json_file}")
+                    continue
+                
                 combined.append(slack_data)
 
         dflist = []
@@ -82,11 +91,15 @@ class SlackDataLoader:
             reply_count, reply_users_count, tm_thread_end = [], [], [], [], [], [], [], [], [], []
 
             for row in slack_data:
+                if not isinstance(row, dict):
+                    print(f"Invalid data format in row: {row}")
+                    continue
+
                 if 'bot_id' not in row.keys():
-                    msg_type.append(row.get('type', ''))
-                    msg_content.append(row.get('text', ''))
+                    msg_type.append(row.get('type'))
+                    msg_content.append(row.get('text'))
                     sender_id.append(row.get('user_profile', {}).get('real_name', 'Not provided'))
-                    time_msg.append(row.get('ts', ''))
+                    time_msg.append(row.get('ts'))
                     msg_dist.append(row['blocks'][0]['elements'][0]['elements'][0]['type']
                                      if 'blocks' in row and row['blocks'] and len(row['blocks'][0]['elements'][0]['elements']) != 0
                                      else 'reshared')
@@ -105,11 +118,13 @@ class SlackDataLoader:
             df = df[df['sender_name'] != 'Not provided']
             dflist.append(df)
 
-        dfall = pd.concat(dflist, ignore_index=True)
-        dfall['channel'] = path_channel.split('/')[-1].split('.')[0]
-        dfall = dfall.reset_index(drop=True)
-
-        return dfall
+        if dflist:
+            dfall = pd.concat(dflist, ignore_index=True)
+            dfall['channel'] = path_channel.split('/')[-1].split('.')[0]
+            dfall = dfall.reset_index(drop=True)
+            return dfall
+        else:
+            return pd.DataFrame()
 
     def parse_slack_reaction(self, channel, path_channel):
         '''
@@ -150,7 +165,15 @@ class SlackDataLoader:
 
         for json_file in glob.glob(f"{self.path}*.json"):
             with open(json_file, 'r') as slack_data:
-                a = json.load(slack_data)
+                try:
+                    a = json.load(slack_data)
+                except json.JSONDecodeError:
+                    print(f"Error decoding JSON in file: {json_file}")
+                    continue
+
+                if not isinstance(a, list):
+                    print(f"Invalid JSON format in file: {json_file}")
+                    continue
 
                 for msg in a:
                     if 'replies' in msg.keys():
