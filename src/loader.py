@@ -58,7 +58,7 @@ class SlackDataLoader:
         return df
 
     def get_messages_dict(self, msgs):
-        # Placeholder: Implement this function based on your specific data structure.
+        # Placeholder: Implement this function based on specific data structure.
         # It's not clear from the provided code how the messages are structured.
         # You might need to adjust this function accordingly.
         # Example: Return a dictionary with keys like 'msg_type', 'msg_content', etc.
