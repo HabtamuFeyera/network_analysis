@@ -36,7 +36,7 @@ class SlackDataLoader:
         """
         self.path = path
         self.channels = self.get_channels()
-        self.users = ""  # self.get_ussers()
+        self.users = self.get_users()
 
     def get_users(self):
         """
@@ -62,7 +62,6 @@ class SlackDataLoader:
 
         """
 
-    #
     # def get_user_map(self):
     #     """
     #     write a function to get a map between user id and user name
@@ -86,7 +85,6 @@ class SlackDataLoader:
         6. reset the index and return dataframe
         """
 
-        # specify path to get json files
         combined = []
         for json_file in glob.glob(f"{path_channel}/all-week*/*.json"):
             with open(json_file, "r", encoding="utf8") as slack_data:
