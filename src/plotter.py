@@ -1,6 +1,16 @@
+import os
+import sys
+import glob
+import json
+import datetime
+import nltk
+nltk.download('stopwords')
+nltk.download('stopwords')
+from collections import Counter
 import pandas as pd
-from matplotlib import pyplot as plt
-import seaborn as sns
+import matplotlib.pyplot as plt
+from nltk.corpus import stopwords
+from wordcloud import WordCloud
 
 
 def get_top_10_user(data, channel='Random'):
