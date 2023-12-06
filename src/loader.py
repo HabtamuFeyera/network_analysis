@@ -165,6 +165,23 @@ class SlackDataLoader:
         df_reaction = pd.DataFrame(data=data_reaction, columns=columns_reaction)
         df_reaction["channel"] = channel
         return df_reaction
+    
+    def get_community_participation(self, path):
+        """specify path to get json files"""
+        combined = []
+        comm_dict = {}
+        for json_file in glob.glob(f"{path}*.json"):
+            with open(json_file, "r") as slack_data:
+                combined.append(slack_data)
+        # print(f"Total json files is {len(combined)}")
+        for i in combined:
+            a = json.load(open(i.name, "r", encoding="utf-8"))
+
+            for msg in a:
+                if "replies" in msg.keys():
+                    for i in msg["replies"]:
+                        comm_dict[i["user"]] = comm_dict.get(i["user"], 0) + 1
+        return comm_dict
 
 
 if __name__ == "__main__":
