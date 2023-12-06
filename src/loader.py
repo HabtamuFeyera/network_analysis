@@ -132,6 +132,40 @@ class SlackDataLoader:
 
         self.df = dfall
         return dfall
+    def parse_slack_reaction(self, path, channel):
+        """get reactions"""
+        dfall_reaction = pd.DataFrame()
+        combined = []
+        for json_file in glob.glob(f"{path}*.json"):
+            with open(json_file, "r") as slack_data:
+                combined.append(slack_data)
+
+        reaction_name, reaction_count, reaction_users, msg, user_id = [], [], [], [], []
+
+        for k in combined:
+            slack_data = json.load(open(k.name, "r", encoding="utf-8"))
+
+            for i_count, i in enumerate(slack_data):
+                if "reactions" in i.keys():
+                    for j in range(len(i["reactions"])):
+                        msg.append(i["text"])
+                        user_id.append(i["user"])
+                        reaction_name.append(i["reactions"][j]["name"])
+                        reaction_count.append(i["reactions"][j]["count"])
+                        reaction_users.append(",".join(i["reactions"][j]["users"]))
+
+        data_reaction = zip(reaction_name, reaction_count, reaction_users, msg, user_id)
+        columns_reaction = [
+            "reaction_name",
+            "reaction_count",
+            "reaction_users_count",
+            "message",
+            "user_id",
+        ]
+        df_reaction = pd.DataFrame(data=data_reaction, columns=columns_reaction)
+        df_reaction["channel"] = channel
+        return df_reaction
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Export Slack history")
